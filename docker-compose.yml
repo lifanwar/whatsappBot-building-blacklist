@@ -1,0 +1,24 @@
+services:
+  whatsapp-bot:
+    build: .
+    container_name: whatsapp-rey
+    ports:
+      - "3883:3883"  # Menyambungkan port 3040 dari container ke host
+    volumes:
+      - .:/app  # Menggunakan volume agar perubahan file langsung ter-update di container
+#    env_file: .env
+    environment:
+      - NODE_ENV=production  # Menentukan environment variabel untuk Node.js
+    restart: always  # Menjamin container akan restart otomatis jika container berhenti
+    mem_limit: 150m
+    command: ["node", "bot.js"]
+#    depends_on:
+ #     - redis
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: wa-gurindamlian-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://whatsapp-bot:3883
+    depends_on:
+      - whatsapp-bot
