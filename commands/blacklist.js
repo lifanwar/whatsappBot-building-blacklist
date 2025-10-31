@@ -2,19 +2,22 @@
 import { supabase } from '../config/supabase.js';
 import { calculateDistance, formatDistance, getBoundingBox } from '../utils/distance.js';
 
+// Ambil radius dari .env
+const SEARCH_RADIUS = parseInt(process.env.SEARCH_RADIUS) || 1000;
+
 /**
  * Search blacklist berdasarkan lokasi dengan optimasi query
  * OPTIMASI: Filter dulu dengan bounding box, baru hitung jarak exact
  */
-export async function searchBlacklistByLocation(userLat, userLng, radiusInMeters = 50) {
+export async function searchBlacklistByLocation(userLat, userLng, radiusInMeters = SEARCH_RADIUS) {
   try {
-    // 1. Hitung bounding box untuk filter awal (optimasi query)
     const bbox = getBoundingBox(userLat, userLng, radiusInMeters);
 
     console.log(`[SEARCH] User location: ${userLat}, ${userLng}`);
+    console.log(`[SEARCH] Radius: ${radiusInMeters}m`);
     console.log(`[SEARCH] Bounding box:`, bbox);
 
-    // 2. Query gedung dalam bounding box (filter di database, bukan client)
+    // Query gedung dalam bounding box
     const { data: gedungData, error: gedungError } = await supabase
       .from('gedung')
       .select(`
@@ -44,14 +47,15 @@ export async function searchBlacklistByLocation(userLat, userLng, radiusInMeters
       return { success: true, results: [] };
     }
 
-    // 3. Filter exact dengan Haversine formula (hitung jarak sebenarnya)
+    // Filter exact dengan Haversine formula
     const gedungInRadius = gedungData
       .map(gedung => {
         const distance = calculateDistance(userLat, userLng, gedung.lat, gedung.lng);
+        console.log(`[SEARCH] ${gedung.nama_gedung || 'Unknown'}: ${distance.toFixed(2)}m`);
         return { ...gedung, distance };
       })
       .filter(gedung => gedung.distance <= radiusInMeters)
-      .sort((a, b) => a.distance - b.distance); // Sort by distance
+      .sort((a, b) => a.distance - b.distance);
 
     console.log(`[SEARCH] ${gedungInRadius.length} gedung within ${radiusInMeters}m radius`);
 
@@ -59,7 +63,7 @@ export async function searchBlacklistByLocation(userLat, userLng, radiusInMeters
       return { success: true, results: [] };
     }
 
-    // 4. Ambil units blacklist (hanya untuk gedung yang lolos filter)
+    // Ambil units blacklist
     const gedungIds = gedungInRadius.map(g => g.id);
 
     const { data: unitsData, error: unitsError } = await supabase
@@ -67,7 +71,7 @@ export async function searchBlacklistByLocation(userLat, userLng, radiusInMeters
       .select('*')
       .in('gedung_id', gedungIds)
       .eq('listing_type', 'blacklist')
-      .eq('status', 'active'); // Hanya yang masih active
+      .eq('status', 'active');
 
     if (unitsError) {
       console.error('[SEARCH] Error fetching units:', unitsError);
@@ -76,12 +80,11 @@ export async function searchBlacklistByLocation(userLat, userLng, radiusInMeters
 
     console.log(`[SEARCH] Found ${unitsData?.length || 0} blacklist units`);
 
-    // 5. Gabungkan data gedung dengan units
+    // Gabungkan data
     const results = gedungInRadius
       .map(gedung => {
         const units = unitsData.filter(u => u.gedung_id === gedung.id);
         
-        // Skip gedung yang tidak punya unit blacklist active
         if (units.length === 0) return null;
 
         return {
@@ -90,7 +93,7 @@ export async function searchBlacklistByLocation(userLat, userLng, radiusInMeters
           units
         };
       })
-      .filter(Boolean); // Remove null entries
+      .filter(Boolean);
 
     console.log(`[SEARCH] Final result: ${results.length} gedung with blacklist units`);
 
