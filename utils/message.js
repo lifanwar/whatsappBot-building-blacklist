@@ -3,21 +3,20 @@
 // Ambil config dari .env
 const SEARCH_RADIUS = parseInt(process.env.SEARCH_RADIUS) || 1000;
 const MAX_RESULTS = parseInt(process.env.MAX_RESULTS_PER_GEDUNG) || 3;
-const radiusKm = SEARCH_RADIUS / 1000;
 
 export const messages = {
   rateLimited: (seconds) => 
     `⏰ *Mohon tunggu ${seconds} detik*\n\nAnda baru saja melakukan pencarian. Silakan coba lagi setelah cooldown selesai.`,
 
   searching: () => 
-    `🔍 *Mencari gedung blacklist...*\n\nSedang mengecek dalam radius ${radiusKm}km dari lokasi Anda...`,
+    `🔍 *Mencari gedung blacklist...*\n\nSedang mengecek dalam radius ${SEARCH_RADIUS}m dari lokasi Anda...`,
 
   noResults: () => 
-    `✅ *Tidak ada gedung blacklist*\n\nTidak ditemukan gedung bermasalah dalam radius ${radiusKm}km dari lokasi Anda.\n\n_Ini kabar baik! Area ini aman._`,
+    `✅ *Tidak ada gedung blacklist*\n\nTidak ditemukan gedung bermasalah dalam radius ${SEARCH_RADIUS}m dari lokasi Anda.\n\n_Ini kabar baik! Area ini aman._`,
 
   formatResults: (results) => {
     let message = `⚠️ *DAFTAR BLACKLIST TERDEKAT*\n\n`;
-    message += `Ditemukan *${results.length} gedung* dengan masalah dalam radius ${radiusKm}km:\n\n`;
+    message += `Ditemukan *${results.length} gedung* dengan masalah dalam radius ${SEARCH_RADIUS}m:\n\n`;
 
     results.forEach((gedung, index) => {
       message += `━━━━━━━━━━━━━━━\n`;
