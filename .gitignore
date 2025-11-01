@@ -1,4 +1,10 @@
+# Primary
 .env
 
+# folder
 /session1/
 /node_modules/
+
+# file
+output.js
+package-lock.json

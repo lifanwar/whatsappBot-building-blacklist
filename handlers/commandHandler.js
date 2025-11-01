@@ -17,7 +17,6 @@ export async function handleTextCommand(sock, preferredJid, text, message) {
     }, {
       quoted: message
     });
-    return;
   }
   
   // Command: helpBlacklist
@@ -25,6 +24,5 @@ export async function handleTextCommand(sock, preferredJid, text, message) {
     await sock.sendMessage(preferredJid, {
       text: blacklistMessages.help()
     });
-    return;
   }
 }

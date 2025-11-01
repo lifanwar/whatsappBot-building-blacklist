@@ -25,8 +25,10 @@ import {
   extractLocation       
 } from './utils/whatsappHelpers.js';
 
+// handlers
 import { handleLocationMessage } from './handlers/locationHandler.js';
 import { handleTextCommand } from './handlers/commandHandler.js';
+import { handleCoordinateMessage, parseCoordinates } from './handlers/coordinateHandler.js'; 
 
 // Setup __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -132,6 +134,14 @@ async function connectToWhatsApp() {
       
       if (text) {
         await handleTextCommand(sock, preferredJid, text, message);
+        
+        const coordinates = parseCoordinates(text);
+        if (coordinates) {
+          // ===== HANDLE COORDINATE =====
+          await handleCoordinateMessage(sock, sender, preferredJid, coordinates);
+          continue;
+        }
+        
       }
 
     }

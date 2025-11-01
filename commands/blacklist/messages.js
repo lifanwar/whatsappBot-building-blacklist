@@ -64,12 +64,16 @@ export const blacklistMessages = {
     const RATE_LIMIT_MINUTES = parseInt(process.env.RATE_LIMIT_MINUTES) || 1;
     
     return `🏠 *BLACKLIST PROPERTY BOT*\n\n` +
-           `Untuk mencari gedung blacklist:\n` +
-           `📍 Kirim *Share Location* Anda\n\n` +
-           `Bot akan otomatis mencari gedung bermasalah dalam radius ${SEARCH_RADIUS}m dari lokasi Anda.\n\n` +
-           `⏰ Rate limit: 1 x per ${RATE_LIMIT_MINUTES} menit\n` +
-           `\n━━━━━━━━━━━━━━━━━\n` +
-           `_Bot ini membantu Anda menghindari properti bermasalah_`;
+      `Untuk mencari gedung blacklist:\n` +
+      `📍 Kirim *Share Location* Anda\n` +
+      `🗺️ Kirim *Koordinat* (format: lat, lon)\n\n` +
+      `Contoh koordinat:\n` +
+      `• 30.044522, 31.360085\n` +
+      `• 30.044522,31.360085\n\n` +
+      `Bot akan otomatis mencari gedung bermasalah dalam radius ${SEARCH_RADIUS}m dari lokasi Anda.\n\n` +
+      `⏰ Rate limit: 1 x per ${RATE_LIMIT_MINUTES} menit\n` +
+      `\n━━━━━━━━━━━━━━━━━\n` +
+      `_Bot ini membantu Anda menghindari properti bermasalah_`;
   }
 };
 
