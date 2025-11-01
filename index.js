@@ -36,6 +36,11 @@ const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
+// Ambil config dari .env
+const SEARCH_RADIUS = parseInt(process.env.SEARCH_RADIUS) || 1000;
+const RATE_LIMIT_MINUTES = parseInt(process.env.RATE_LIMIT_MINUTES) || 1;
+const radiusKm = SEARCH_RADIUS / 1000;
+
 // ===== HELPER FUNCTIONS =====
 
 function isLidUser(jid) {
@@ -224,12 +229,12 @@ async function connectToWhatsApp() {
 Untuk mencari gedung blacklist:
 📍 Kirim *Share Location* Anda
 
-Bot akan otomatis mencari gedung bermasalah dalam radius 50m dari lokasi Anda.
+Bot akan otomatis mencari gedung bermasalah dalam radius ${radiusKm}km dari lokasi Anda.
 
-⏰ Rate limit: 1x per menit
+⏰ Rate limit: ${RATE_LIMIT_MINUTES}x per menit
 
 _Bot ini membantu Anda menghindari properti bermasalah_`;
-        
+  
         await sock.sendMessage(preferredJid, {
           text: helpText
         });

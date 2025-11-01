@@ -1,12 +1,11 @@
 // utils/rateLimiter.js
 
 const userLastRequest = new Map();
-const RATE_LIMIT_MS = 60 * 1000; // 1 menit
 
-/**
- * Check apakah user boleh request
- * @returns {boolean} true jika boleh, false jika masih cooldown
- */
+// Ambil rate limit dari .env (dalam menit)
+const RATE_LIMIT_MINUTES = parseInt(process.env.RATE_LIMIT_MINUTES) || 1;
+const RATE_LIMIT_MS = RATE_LIMIT_MINUTES * 60 * 1000;
+
 export function canUserRequest(userId) {
   const now = Date.now();
   const lastRequest = userLastRequest.get(userId);
@@ -26,10 +25,6 @@ export function canUserRequest(userId) {
   return true;
 }
 
-/**
- * Get remaining cooldown time
- * @returns {number} seconds remaining
- */
 export function getRemainingCooldown(userId) {
   const now = Date.now();
   const lastRequest = userLastRequest.get(userId);
@@ -42,7 +37,7 @@ export function getRemainingCooldown(userId) {
   return remaining > 0 ? Math.ceil(remaining / 1000) : 0;
 }
 
-// Cleanup old entries setiap 5 menit
+// Cleanup old entries
 setInterval(() => {
   const now = Date.now();
   for (const [userId, timestamp] of userLastRequest.entries()) {
