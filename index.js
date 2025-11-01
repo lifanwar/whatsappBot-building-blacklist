@@ -33,7 +33,7 @@ const logger = pino({ level: 'silent' });
 
 // Express server untuk QR
 const app = express();
-const PORT = 3883;
+const PORT = parseInt(process.env.PORT);
 const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
