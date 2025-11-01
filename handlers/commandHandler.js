@@ -20,7 +20,7 @@ export async function handleTextCommand(sock, preferredJid, text, message) {
     return;
   }
   
-  // Command: help
+  // Command: helpBlacklist
   if (command === 'help' || command === 'menu') {
     await sock.sendMessage(preferredJid, {
       text: blacklistMessages.help()
