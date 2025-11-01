@@ -20,7 +20,9 @@ import { dirname } from 'path';
 // Import modules
 import { searchBlacklistByShareLocation } from './commands/blacklist/index.js';
 import { canUserRequest, getRemainingCooldown } from './utils/rateLimiter.js';
-import { messages } from './utils/message.js';
+
+// import messages
+import { blacklistMessages } from './commands/blacklist/index.js';
 
 // Setup __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -168,14 +170,14 @@ async function connectToWhatsApp() {
         if (!canUserRequest(sender)) {
           const remaining = getRemainingCooldown(sender);
           await sock.sendMessage(preferredJid, {
-            text: messages.rateLimited(remaining)
+            text: blacklistMessages.rateLimited(remaining)
           });
           continue;
         }
         
         // Send loading message
         const loadingMsg = await sock.sendMessage(preferredJid, {
-          text: messages.searching()
+          text: blacklistMessages.searching()
         });
         
         // Search blacklist
@@ -187,11 +189,11 @@ async function connectToWhatsApp() {
         let responseText;
         
         if (!result.success) {
-          responseText = messages.error();
+          responseText = blacklistMessages.error();
         } else if (result.results.length === 0) {
-          responseText = messages.noResults();
+          responseText = blacklistMessages.noResults();
         } else {
-          responseText = messages.formatResults(result.results);
+          responseText = blacklistMessages.formatResults(result.results);
         }
         
         // Update loading message with result
@@ -220,21 +222,10 @@ async function connectToWhatsApp() {
         });
       }
       
-      // Command: help
+      // Command: help blacklist
       else if (text === 'help' || text === 'menu') {
-        const helpText = `🏠 *BLACKLIST PROPERTY BOT*
-
-Untuk mencari gedung blacklist:
-📍 Kirim *Share Location* Anda
-
-Bot akan otomatis mencari gedung bermasalah dalam radius ${SEARCH_RADIUS}m dari lokasi Anda.
-
-⏰ Rate limit: ${RATE_LIMIT_MINUTES}x per menit
-
-_Bot ini membantu Anda menghindari properti bermasalah_`;
-  
         await sock.sendMessage(preferredJid, {
-          text: helpText
+          text: blacklistMessages.help()
         });
       }
     }
