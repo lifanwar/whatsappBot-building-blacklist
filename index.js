@@ -38,10 +38,6 @@ const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-// Ambil config dari .env
-const SEARCH_RADIUS = parseInt(process.env.SEARCH_RADIUS) || 1000;
-const RATE_LIMIT_MINUTES = parseInt(process.env.RATE_LIMIT_MINUTES) || 1;
-
 // ===== HELPER FUNCTIONS =====
 
 function isLidUser(jid) {
