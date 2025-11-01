@@ -18,7 +18,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 // Import modules
-import { searchBlacklistByLocation } from './commands/blacklist.js';
+import { searchBlacklistByShareLocation } from './commands/blacklist/index.js';
 import { canUserRequest, getRemainingCooldown } from './utils/rateLimiter.js';
 import { messages } from './utils/message.js';
 
@@ -179,10 +179,9 @@ async function connectToWhatsApp() {
         });
         
         // Search blacklist
-        const result = await searchBlacklistByLocation(
+        const result = await searchBlacklistByShareLocation(
           location.latitude,
           location.longitude,
-          1000 // 50 meter radius
         );
         
         let responseText;
